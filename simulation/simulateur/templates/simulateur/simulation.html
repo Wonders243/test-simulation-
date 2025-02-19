@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simulation</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(500, 1px);
+            grid-template-rows: repeat(500, 1px);
+            gap: 2px;
+            border: 2px solid black;
+        }
+        .cell {
+            width: 5px;
+            height: 5px;
+            background-color: rgb(17, 15, 15);
+            border: 0px solid #ffffff00;
+        }
+        .container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background-color: white; /* Change en transparent si tu veux */
+            border: 2px solid black;
+        }
+        .red-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            transition: 0.3s ease-in-out; /* Animation fluide */
+        }
+    </style>
+</head>
+<body>
+    <h1>Simulation d'un point rouge</h1>
+    <div class="grid">
+        {% for row in grid_range %}
+
+            {% for col in grid_range %} 
+                <div class="cell" id="cell-{{ row }}-{{ col }}"></div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <script>
+        function updatePosition() {
+            fetch('/move/')  // Appelle Django pour récupérer la nouvelle position
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelectorAll('.red-dot').forEach(dot => dot.remove()); // Supprime l'ancien point rouge
+
+                    let cell = document.getElementById(`cell-${data.x}-${data.y}`);  // Sélectionne la nouvelle case
+                    let dot = document.createElement("div");
+                    dot.classList.add("red-dot");
+                    cell.appendChild(dot);
+                });
+        }
+
+        setInterval(updatePosition, (100));  // Met à jour toutes les secondes
+    </script>
+</body>
+</html>
